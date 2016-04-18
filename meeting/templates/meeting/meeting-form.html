@@ -1,0 +1,14 @@
+{% extends "meeting/base.html" %}
+
+{% block content %}
+
+<form action="/meetings/create-meeting/" method="post">
+    {% csrf_token %}
+    {{ meeting_form }}
+    {% for attendee_form in attendee_forms %}
+      {{ attendee_form }}
+    {% endfor %}
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
