@@ -12,6 +12,7 @@ class AgendaPoint(models.Model):
     description = models.TextField('Description', null=True, blank=True)
     timeStart = models.TimeField('Start time', null=True, blank=True)
     timeEnd = models.TimeField('End time', null=True, blank=True)
+    notes = models.TextField('Notes', null=True, blank=True)
 
     def __str__(self):
         return self.title
