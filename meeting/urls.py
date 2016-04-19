@@ -6,4 +6,5 @@ from . import views
 urlpatterns = [
     url(r'^$', TemplateView.as_view(template_name='meeting/home.html'), name='home'),
     url(r'^meetings/create-meeting/$', views.createMeeting, name='create-meeting'),
+    url(r'^meetings/([0-9]+)/add-attendees/$', views.addAttendees, name='add-attendee'),
 ]

@@ -9,22 +9,38 @@ def index(request):
 
 def createMeeting(request):
     if request.method == 'POST':
-        pass
-        # form = StoryForm(request.POST)
-        # if form.is_valid():
-        #     new_story = form.save(commit=False)
-        #     story_slug = slugify(new_story.title)
-        #     slug_check = story.objects.filter(slug=story_slug)
-        #     if slug_check:
-        #         return HttpResponse('Oh! Sorry, that slug already exists.')
-        #     else:
-        #         print('This is about to be saved')
-        #         new_story.save()
-        #         return HttpResponse("Thanks!")
+
+        mform = MeetingForm(request.POST, instance=Meeting())
+        # aforms = [AttendeeForm(request.POST, prefix=str(x), instance=Attendee()) for x in range(0,3)]
+        # if mform.is_valid() and all([af.is_valid() for af in aforms]):
+        #     new_meeting = mform.save()
+        #     for af in aforms:
+        #         new_attendee = af.save(commit=False)
+        #         new_attendee.meeting = new_meeting
+        #         new_attendee.save()
+        if mform.is_valid():
+            new_meeting = mform.save()
+
+            return HttpResponse("YAY!")
     else:
-        mform = MeetingForm(instance=Meeting())
+        form = MeetingForm(instance=Meeting())
+        # aforms = [AttendeeForm(prefix=str(x), instance=Attendee()) for x in range (0,3)]
+
+    # return render(request, 'meeting/meeting-form.html', {'meeting_form': mform, 'attendee_forms': aforms})
+
+    return render(request, 'meeting/form.html', {'form': form})
+
+def addAttendees(request, meeting_id):
+    if request.method == 'POST':
+        aforms = [AttendeeForm(request.POST, prefix=str(x), instance=Attendee()) for x in range(0,3)]
+        meeting = Meeting.objects.get(pk=meeting_id)
+        if all([af.is_valid() for af in aforms]):
+            for af in aforms:
+                new_attendee = af.save(commit=False)
+                new_attendee.meeting = meeting
+                new_attendee.save()
+            return HttpResponse("YAY!")
+    else:
         aforms = [AttendeeForm(prefix=str(x), instance=Attendee()) for x in range (0,3)]
 
-    return render_to_response('meeting/meeting-form.html', {'meeting_form': mform, 'attendee_forms': aforms})
-
-    # return render(request, 'meeting/meeting-form.html', {'form': form})
+    return render(request, 'meeting/form.html', {'form': aforms})

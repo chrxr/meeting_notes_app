@@ -12,4 +12,4 @@ class MeetingForm(forms.ModelForm):
 class AttendeeForm(forms.ModelForm):
     class Meta:
         model = Attendee
-        exclude = ['meeting'] 
+        exclude = ['meeting']
