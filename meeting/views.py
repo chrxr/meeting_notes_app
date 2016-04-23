@@ -1,7 +1,10 @@
+from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
-from django.http import HttpResponse
-from .forms import MeetingForm, AttendeeForm
-from .models import Meeting, Attendee
+from django.http import HttpResponse, HttpResponseRedirect
+from .forms import MeetingForm, AttendeeForm, AgendaForm
+from .models import Meeting, Attendee, AgendaPoint
+from django.forms import formset_factory
+import datetime
 
 
 def index(request):
@@ -9,38 +12,44 @@ def index(request):
 
 def createMeeting(request):
     if request.method == 'POST':
-
         mform = MeetingForm(request.POST, instance=Meeting())
-        # aforms = [AttendeeForm(request.POST, prefix=str(x), instance=Attendee()) for x in range(0,3)]
-        # if mform.is_valid() and all([af.is_valid() for af in aforms]):
-        #     new_meeting = mform.save()
-        #     for af in aforms:
-        #         new_attendee = af.save(commit=False)
-        #         new_attendee.meeting = new_meeting
-        #         new_attendee.save()
         if mform.is_valid():
             new_meeting = mform.save()
-
-            return HttpResponse("YAY!")
+            return HttpResponseRedirect(reverse('add-attendee', args=[new_meeting.pk]))
     else:
         form = MeetingForm(instance=Meeting())
-        # aforms = [AttendeeForm(prefix=str(x), instance=Attendee()) for x in range (0,3)]
-
-    # return render(request, 'meeting/meeting-form.html', {'meeting_form': mform, 'attendee_forms': aforms})
-
-    return render(request, 'meeting/form.html', {'form': form})
+    return render(request, 'meeting/create-meeting-form.html', {'form': form})
 
 def addAttendees(request, meeting_id):
+    AttendeeFormSet = formset_factory(AttendeeForm)
+    aforms = AttendeeFormSet(request.POST or None)
     if request.method == 'POST':
-        aforms = [AttendeeForm(request.POST, prefix=str(x), instance=Attendee()) for x in range(0,3)]
         meeting = Meeting.objects.get(pk=meeting_id)
         if all([af.is_valid() for af in aforms]):
             for af in aforms:
                 new_attendee = af.save(commit=False)
                 new_attendee.meeting = meeting
                 new_attendee.save()
+            return HttpResponseRedirect(reverse('add-agenda', args=[meeting.pk]))
+    else:
+        return render(request, 'meeting/add-attendee-form.html', {'form': aforms})
+
+def addAgendaPoints(request, meeting_id):
+    AgendaFormSet = formset_factory(AgendaForm)
+    aforms = AgendaFormSet(request.POST or None)
+    if request.method == 'POST':
+        meeting = Meeting.objects.get(pk=meeting_id)
+        if all([af.is_valid() for af in aforms]):
+            for af in aforms:
+                new_agenda_point = af.save(commit=False)
+                new_agenda_point.meeting = meeting
+                new_agenda_point.save()
             return HttpResponse("YAY!")
     else:
-        aforms = [AttendeeForm(prefix=str(x), instance=Attendee()) for x in range (0,3)]
+        return render(request, 'meeting/add-agenda-form.html', {'form': aforms})
 
-    return render(request, 'meeting/form.html', {'form': aforms})
+def viewMeetings(request):
+    print datetime.date.today()
+    meetings = Meeting.objects.filter(dateTime__gt=datetime.date.today())
+    print meetings
+    return render(request, 'meeting/view-meetings.html', {'meetings': meetings})

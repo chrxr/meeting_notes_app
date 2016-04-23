@@ -4,10 +4,7 @@
 
 <form action="/meetings/create-meeting/" method="post">
     {% csrf_token %}
-
-      {% for aform in form %}
-        {{ aform }}
-      {% endfor %}
+        {{ form }}
 
     <input type="submit" value="Submit" />
 </form>

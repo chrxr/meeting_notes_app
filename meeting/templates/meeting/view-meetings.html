@@ -1,0 +1,15 @@
+{% extends "meeting/base.html" %}
+
+{% block content %}
+
+
+{% for meeting in meetings %}
+  <h3>{{ meeting.title }}
+  <ul>
+    <li>{{ meeting.dateTime }}</li>
+    <li>{{ meeting.location }}</li>
+  </ul>
+{% endfor %}
+
+
+{% endblock %}
