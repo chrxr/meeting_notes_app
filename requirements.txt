@@ -1,0 +1,4 @@
+Django==1.9.5
+django-modelcluster==2.0
+pytz==2016.4
+wsgiref==0.1.2

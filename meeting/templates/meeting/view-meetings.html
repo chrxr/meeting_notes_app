@@ -2,12 +2,14 @@
 
 {% block content %}
 
+<h3><a href="{% url 'create-meeting' %}">Create a new meeting</a></h3>
 
 {% for meeting in meetings %}
-  <h3>{{ meeting.title }}
+  <h3>{{ meeting.title }}</h3>
   <ul>
     <li>{{ meeting.dateTime }}</li>
     <li>{{ meeting.location }}</li>
+    <li><a href="{% url 'manage-meeting' meeting.pk %}">Manage meeting</a></li>
   </ul>
 {% endfor %}
 

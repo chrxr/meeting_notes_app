@@ -10,15 +10,22 @@ import datetime
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
-def createMeeting(request):
+def createMeeting(request, meeting_id=None):
     if request.method == 'POST':
-        mform = MeetingForm(request.POST, instance=Meeting())
+        if meeting_id:
+            meeting = Meeting.objects.get(pk=meeting_id)
+            mform = MeetingForm(request.POST, instance=meeting)
+        else:
+            mform = MeetingForm(request.POST, instance=Meeting())
         if mform.is_valid():
             new_meeting = mform.save()
-            return HttpResponseRedirect(reverse('add-attendee', args=[new_meeting.pk]))
+            return HttpResponseRedirect(reverse('manage-meeting', args=[new_meeting.pk]))
+    elif meeting_id:
+        meeting = Meeting.objects.get(pk=meeting_id)
+        form = MeetingForm(instance=meeting)
     else:
         form = MeetingForm(instance=Meeting())
-    return render(request, 'meeting/create-meeting-form.html', {'form': form})
+    return render(request, 'meeting/create-meeting-form.html', {'form': form, 'meeting_id': meeting_id})
 
 def addAttendees(request, meeting_id):
     AttendeeFormSet = formset_factory(AttendeeForm)
@@ -49,7 +56,9 @@ def addAgendaPoints(request, meeting_id):
         return render(request, 'meeting/add-agenda-form.html', {'form': aforms})
 
 def viewMeetings(request):
-    print datetime.date.today()
     meetings = Meeting.objects.filter(dateTime__gt=datetime.date.today())
-    print meetings
     return render(request, 'meeting/view-meetings.html', {'meetings': meetings})
+
+def manageMeeting(request, meeting_id):
+    meeting = Meeting.objects.get(pk=meeting_id)
+    return render(request, 'meeting/manage-meeting.html', {'meeting': meeting})

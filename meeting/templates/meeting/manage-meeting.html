@@ -1,0 +1,12 @@
+{% extends "meeting/base.html" %}
+
+{% block content %}
+
+  <h3>{{ meeting.title }}</h3>
+  <ul>
+    <li><a href='{% url 'edit-meeting' meeting.pk %}'>Edit meeting details</a></li>
+    <li><a href='{% url 'add-attendees' meeting.pk %}'>Edit attendees</a></li>
+    <li><a href='{% url 'add-agenda' meeting.pk %}'>Edit agenda</a></li>
+  </ul>
+
+{% endblock %}

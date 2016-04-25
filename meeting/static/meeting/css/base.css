@@ -1,0 +1,26 @@
+body {
+  background-color:#EA5959;
+  font-family: arial;
+}
+
+.form-frame {
+  margin-top:100px;
+  width:500px;
+  background-color:#78DEC9;
+  margin-right:auto;
+  margin-left:auto;
+  padding:20px;
+  border: 15px solid #FEFF9F;
+  border-radius: 30px;
+  background-clip: border-box;
+}
+
+.form-frame ul {
+  padding-left:0;
+}
+
+.form-frame li {
+  list-style: none;
+  list-style-position: inside;
+  margin-bottom:5px;
+}

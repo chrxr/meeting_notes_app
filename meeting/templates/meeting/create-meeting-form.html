@@ -2,10 +2,15 @@
 
 {% block content %}
 
+{% if meeting_id %}
+<form action="/meetings/{{ meeting_id }}/edit/" method="post">
+{% else %}
 <form action="/meetings/create-meeting/" method="post">
+{% endif %}
     {% csrf_token %}
-        {{ form }}
-
+      <ul>
+        {{ form.as_ul }}
+      </ul>
     <input type="submit" value="Submit" />
 </form>
 
