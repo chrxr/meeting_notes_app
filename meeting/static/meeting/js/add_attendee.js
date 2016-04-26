@@ -4,21 +4,31 @@
 })();
 
 function addAttendee() {
-  var totalCurrentForms = document.getElementById("id_form-TOTAL_FORMS")
-  var nextFormNumber = parseInt(totalCurrentForms.value)+1
-  var existingSelect = document.getElementById("id_form-1-person")
-  var selectArray = [];
-  for (i = 1; i < existingSelect.options.length; i++){
-      selectArray.push(existingSelect.options[i].text)
+  var totalCurrentForms = document.getElementById("id_form-TOTAL_FORMS"),
+      nextFormNumber = parseInt(totalCurrentForms.value)+1,
+      existingSelect = document.getElementById("id_form-1-person"),
+      selectArray = [];
+      attendee_list = document.getElementById("attendee_list"),
+      list_item = document.createElement('li')
+      select = document.createElement('select');
+  select.id = "id_form-"+parseInt(totalCurrentForms.value)+'-person';
+  select.name = "id_form-"+parseInt(totalCurrentForms.value)+'-person';
+  for (i = 0; i < existingSelect.options.length; i++){
+      option = document.createElement('option');
+      if (i == 0) {
+        option.value = ""
+        option.setAttribute("selected", "selected");
+      }
+      else {
+        option.value = i
+      }
+      option.text = existingSelect.options[i].text
+      select.appendChild(option);
   }
-  console.log(selectArray)
-  var form = document.forms["attendee_form"]
-  var input = document.createElement('select')
-  input.options = existingSelect.options;
-  input.id = "id_form-"+(nextFormNumber)+'-person';
-  input.label = "Person";
+  select.options[0].selected = 'selected';
   totalCurrentForms.value = nextFormNumber;
-  form.appendChild(input);
+  list_item.appendChild(select)
+  attendee_list.appendChild(list_item);
 }
 
   // collect the form data while iterating over the inputs

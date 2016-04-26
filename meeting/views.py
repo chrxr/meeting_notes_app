@@ -30,7 +30,8 @@ def createMeeting(request, meeting_id=None):
 def addAttendees(request, meeting_id):
     AttendeeFormSet = formset_factory(AttendeeForm, extra=2)
     aforms = AttendeeFormSet(request.POST or None)
-    print aforms.management_form
+    for af in aforms:
+        print af
     if request.method == 'POST':
         meeting = Meeting.objects.get(pk=meeting_id)
         if all([af.is_valid() for af in aforms]):

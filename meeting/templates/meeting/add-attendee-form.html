@@ -6,7 +6,7 @@
 
 <form id="attendee_form" action="" method="post">
     {% csrf_token %}
-    <ul>
+    <ul id='attendee_list'>
       {% for aform in form %}
         {{ aform.as_ul }}
       {% endfor %}
