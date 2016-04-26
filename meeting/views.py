@@ -28,8 +28,9 @@ def createMeeting(request, meeting_id=None):
     return render(request, 'meeting/create-meeting-form.html', {'form': form, 'meeting_id': meeting_id})
 
 def addAttendees(request, meeting_id):
-    AttendeeFormSet = formset_factory(AttendeeForm)
+    AttendeeFormSet = formset_factory(AttendeeForm, extra=2)
     aforms = AttendeeFormSet(request.POST or None)
+    print aforms.management_form
     if request.method == 'POST':
         meeting = Meeting.objects.get(pk=meeting_id)
         if all([af.is_valid() for af in aforms]):

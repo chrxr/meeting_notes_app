@@ -1,8 +1,10 @@
 {% extends "meeting/base.html" %}
+{% load static %}
+
 
 {% block content %}
 
-<form action="" method="post">
+<form id="attendee_form" action="" method="post">
     {% csrf_token %}
     <ul>
       {% for aform in form %}
@@ -10,7 +12,14 @@
       {% endfor %}
     </ul>
     <input type="submit" value="Submit" />
+    <input id="add_attendee" type="button" value="Add attendee" />
     {{ form.management_form }}
 </form>
+
+{% endblock %}
+
+{% block extra_js %}
+<h1>STUFF HERE</h1>
+<script src="{% static 'meeting/js/add_attendee.js' %}"></script>
 
 {% endblock %}
