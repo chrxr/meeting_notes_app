@@ -6,11 +6,13 @@
 
 <form id="attendee_form" action="" method="post">
     {% csrf_token %}
-    <ul id='attendee_list'>
-      {% for aform in form %}
-        {{ aform.as_ul }}
-      {% endfor %}
-    </ul>
+    <div id='form_block'>
+      <ul id='attendee_list_1'>
+        {% for aform in form %}
+          {{ aform.as_ul }}
+        {% endfor %}
+      </ul>
+    </div>
     <input type="submit" value="Submit" />
     <input id="add_attendee" type="button" value="Add attendee" />
     {{ form.management_form }}

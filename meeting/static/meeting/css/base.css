@@ -1,9 +1,11 @@
 body {
   background-color:#EA5959;
   font-family: arial;
+  font-size:16px;
 }
 
 .form-frame {
+  font-size: 1.2em;
   margin-top:100px;
   width:500px;
   background-color:#78DEC9;
@@ -19,8 +21,24 @@ body {
   padding-left:0;
 }
 
+.form-frame label {
+  display:inline-block;
+  width:100%;
+  margin-top:0.5em;
+  margin-bottom:0.5em;
+}
+
 .form-frame li {
   list-style: none;
   list-style-position: inside;
   margin-bottom:5px;
+}
+
+.form-frame input {
+  font-size:1em;
+  height: 1.3em;
+}
+
+.form-frame textarea {
+  width:100%;
 }

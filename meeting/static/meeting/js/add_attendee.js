@@ -4,15 +4,22 @@
 })();
 
 function addAttendee() {
-  var totalCurrentForms = document.getElementById("id_form-TOTAL_FORMS"),
-      nextFormNumber = parseInt(totalCurrentForms.value)+1,
-      existingSelect = document.getElementById("id_form-1-person"),
-      selectArray = [];
-      attendee_list = document.getElementById("attendee_list"),
+  var totalCurrentForms = document.getElementById("id_form-TOTAL_FORMS");
+  if (totalCurrentForms == null) {
+    totalCurrentForms = document.getElementById("id_attendees-TOTAL_FORMS");
+  }
+  var nextFormNumber = parseInt(totalCurrentForms.value)+1,
+      existingSelect = document.getElementById("id_form-0-person");
+  if (existingSelect == null) {
+    existingSelect = document.getElementById("id_attendees-0-person")
+  }
+
+  var selectArray = [],
+      attendee_list = document.getElementById("attendee_list_1"),
       list_item = document.createElement('li')
       select = document.createElement('select');
   select.id = "id_form-"+parseInt(totalCurrentForms.value)+'-person';
-  select.name = "id_form-"+parseInt(totalCurrentForms.value)+'-person';
+  select.name = "form-"+parseInt(totalCurrentForms.value)+'-person';
   for (i = 0; i < existingSelect.options.length; i++){
       option = document.createElement('option');
       if (i == 0) {

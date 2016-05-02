@@ -17,4 +17,8 @@ class AttendeeForm(forms.ModelForm):
 class AgendaForm(forms.ModelForm):
     class Meta:
         model = AgendaPoint
-        exclude = ['meeting']
+        fields = ['title', 'description', 'timeStart', 'timeEnd']
+        widgets = {
+            'timeStart': forms.TextInput(attrs={'placeholder': "HH:MM"}),
+            'timeEnd': forms.TextInput(attrs={'placeholder': "HH:MM"}),
+        }
