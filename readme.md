@@ -5,4 +5,8 @@
     - This will be based on adding email addresses in gmail
     - When starts typing a name, it will auto-check against the database
 - [ ] Need to isolate individual users' contacts and meetings, currently they are global
-- [ ] Add in authentication model  
+- [ ] Add in authentication model
+- [ ] Change 'startTime' and 'endTime' in agenda model to 'length'
+- [ ] Validate 'length' for all agenda points in meeting against total length of meeting
+- [ ] Remove 'notes' field from agenda, break out into separate model
+- [ ] Create 'actions' model, with ParentalKey to notes (which in turn is owned by Action)

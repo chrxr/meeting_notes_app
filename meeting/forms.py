@@ -7,7 +7,7 @@ from django.utils.translation import gettext as _
 class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
-        fields = ['title', 'dateTime', 'location']
+        fields = ['title', 'date', 'timeStart', 'timeEnd', 'location']
 
 class AttendeeForm(forms.ModelForm):
     class Meta:

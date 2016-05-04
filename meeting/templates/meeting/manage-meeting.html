@@ -2,6 +2,9 @@
 
 {% block content %}
 
+<h4><a href="{% url 'view-meetings' %}">Back to all meetings</a></h4>
+<h4><a href="{% url 'meeting-details' meeting.pk %}">View full details</a></h4>
+
   <h3>{{ meeting.title }}</h3>
   <ul>
     <li><a href='{% url 'edit-meeting' meeting.pk %}'>Edit meeting details</a></li>

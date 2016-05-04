@@ -43,7 +43,9 @@ class Action(models.Model):
 
 class Meeting(ClusterableModel):
     title = models.CharField('Meeting title', max_length=255)
-    dateTime = models.DateTimeField('Date & Time')
+    date = models.DateField('Date', null=True, blank=True)
+    timeStart = models.TimeField('Start time', null=True, blank=True)
+    timeEnd = models.TimeField('End time', null=True, blank=True)
     location = models.CharField('Location', max_length=255, null=True, blank=True)
 
     def __str__(self):

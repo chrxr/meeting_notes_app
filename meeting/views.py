@@ -1,9 +1,10 @@
 from django import forms
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
 from .forms import MeetingForm, AttendeeForm, AgendaForm
-from .models import Meeting, Attendee, AgendaPoint
+from .models import Meeting, Attendee, AgendaPoint, Person
 from django.forms import formset_factory, inlineformset_factory
 import datetime
 
@@ -27,12 +28,14 @@ def createMeeting(request, meeting_id=None):
         if mform.is_valid():
             new_meeting = mform.save()
             return HttpResponseRedirect(reverse('manage-meeting', args=[new_meeting.pk]))
+        else:
+            messages.error(request, "Error")
     elif meeting_id:
         meeting = Meeting.objects.get(pk=meeting_id)
-        form = MeetingForm(instance=meeting)
+        mform = MeetingForm(instance=meeting)
     else:
-        form = MeetingForm(instance=Meeting())
-    return render(request, 'meeting/create-meeting-form.html', {'form': form, 'meeting_id': meeting_id})
+        mform = MeetingForm(instance=Meeting())
+    return render(request, 'meeting/create-meeting-form.html', {'form': mform, 'meeting_id': meeting_id})
 
 
 ##### Stuff to do for attendees
@@ -62,9 +65,15 @@ def addAttendees(request, meeting_id):
         if all([af.is_valid() for af in aforms]):
             for af in aforms:
                 new_attendee = af.save(commit=False)
-                new_attendee.meeting = meeting
-                new_attendee.save()
+                try:
+                    new_attendee.meeting = meeting
+                    new_attendee.save()
+                except:
+                    messages.error(request, "Error")
+
             return HttpResponseRedirect(reverse('manage-meeting', args=[meeting_id]))
+        else:
+            return HttpResponse(aforms.errors)
     elif existingAttendees:
         return HttpResponseRedirect(reverse('edit-attendees', args=[meeting_id]))
     else:
@@ -103,7 +112,7 @@ def addAgendaPoints(request, meeting_id):
         return render(request, 'meeting/add-agenda-form.html', {'form': aforms})
 
 def viewMeetings(request):
-    meetings = Meeting.objects.filter(dateTime__gt=datetime.date.today())
+    meetings = Meeting.objects.filter(date__gt=datetime.date.today())
     return render(request, 'meeting/view-meetings.html', {'meetings': meetings})
 
 def meetingDetails(request, meeting_id):
