@@ -19,21 +19,21 @@ class Attendee(models.Model):
     person = models.ForeignKey('Person', related_name='+')
 
     def __str__(self):
-        return self.meeting.title +', ' + self.meeting.dateTime.strftime('%m/%d/%Y') + ': ' + self.person.firstName + ' ' + self.person.secondName
+        return self.meeting.title +', ' + self.meeting.date.strftime('%m/%d/%Y') + ': ' + self.person.firstName + ' ' + self.person.secondName
 
 class AgendaPoint(models.Model):
     meeting = ParentalKey('Meeting', related_name='agenda_points')
     title = models.CharField('Agenda point', max_length=255)
     description = models.TextField('Description', null=True, blank=True)
-    timeStart = models.TimeField('Start time', null=True, blank=True)
-    timeEnd = models.TimeField('End time', null=True, blank=True)
+    duration = models.IntegerField('Duration', null=True, blank=True)
     notes = models.TextField('Notes', null=True, blank=True)
 
     def __str__(self):
         return self.title
 
 class Action(models.Model):
-    meeting = models.ForeignKey('AgendaPoint', related_name='actions')
+    meeting = ParentalKey('Meeting', related_name='actions')
+    agendaPoint = models.ForeignKey('AgendaPoint', related_name='actions', null=True, blank=True)
     action = models.TextField('Action')
     assignee = models.ForeignKey('Person', related_name='+', blank=True, null=True)
     dueDate = models.DateTimeField('To be completed by', blank=True, null=True)

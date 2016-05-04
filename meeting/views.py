@@ -82,6 +82,9 @@ def addAttendees(request, meeting_id):
 def editAgendaPoints(request, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
     AgendaFormSet = inlineformset_factory(Meeting, AgendaPoint, exclude=('meeting','notes'), extra=0)
+    current_agenda_items = AgendaPoint.objects.filter(meeting=meeting_id)
+    total_agenda_length = sum([d.duration for d in current_agenda_items])
+    meeting_length = calculate_meeting_length(meeting)
     if request.method == 'POST':
         aforms = AgendaFormSet(request.POST, prefix='agenda_points', instance=meeting)
         if aforms.is_valid():
@@ -89,17 +92,19 @@ def editAgendaPoints(request, meeting_id):
             return HttpResponseRedirect(reverse('manage-meeting', args=[meeting_id]))
         else:
             return HttpResponse(aforms.errors)
+
     else:
         aforms = AgendaFormSet(instance=meeting)
-        return render(request, 'meeting/add-agenda-form.html', {'form': aforms})
+        return render(request, 'meeting/add-agenda-form.html', {'form': aforms, 'meeting_length': meeting_length})
 
 
 def addAgendaPoints(request, meeting_id):
     existingAgenda = AgendaPoint.objects.filter(meeting=meeting_id)
+    meeting = Meeting.objects.get(pk=meeting_id)
     AgendaFormSet = formset_factory(AgendaForm)
     aforms = AgendaFormSet(request.POST or None)
+    meeting_length = calculate_meeting_length(meeting)
     if request.method == 'POST':
-        meeting = Meeting.objects.get(pk=meeting_id)
         if all([af.is_valid() for af in aforms]):
             for af in aforms:
                 new_agenda_point = af.save(commit=False)
@@ -109,7 +114,7 @@ def addAgendaPoints(request, meeting_id):
     elif existingAgenda:
         return HttpResponseRedirect(reverse('edit-agenda', args=[meeting_id]))
     else:
-        return render(request, 'meeting/add-agenda-form.html', {'form': aforms})
+        return render(request, 'meeting/add-agenda-form.html', {'form': aforms, 'meeting_length': meeting_length})
 
 def viewMeetings(request):
     meetings = Meeting.objects.filter(date__gt=datetime.date.today())
@@ -124,3 +129,13 @@ def meetingDetails(request, meeting_id):
 def manageMeeting(request, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
     return render(request, 'meeting/manage-meeting.html', {'meeting': meeting})
+
+
+#### HELPERS
+
+def calculate_meeting_length(meeting):
+    start = datetime.datetime.combine(meeting.date, meeting.timeStart)
+    end = datetime.datetime.combine(meeting.date, meeting.timeEnd)
+    meeting_length_td = end - start
+    meeting_length_mins = meeting_length_td.total_seconds() / 60
+    return meeting_length_mins

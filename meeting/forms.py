@@ -8,6 +8,11 @@ class MeetingForm(forms.ModelForm):
     class Meta:
         model = Meeting
         fields = ['title', 'date', 'timeStart', 'timeEnd', 'location']
+        widgets = {
+            'timeStart': forms.TextInput(attrs={'placeholder': "HH:MM"}),
+            'timeEnd': forms.TextInput(attrs={'placeholder': "HH:MM"}),
+        }
+
 
 class AttendeeForm(forms.ModelForm):
     class Meta:
@@ -17,8 +22,4 @@ class AttendeeForm(forms.ModelForm):
 class AgendaForm(forms.ModelForm):
     class Meta:
         model = AgendaPoint
-        fields = ['title', 'description', 'timeStart', 'timeEnd']
-        widgets = {
-            'timeStart': forms.TextInput(attrs={'placeholder': "HH:MM"}),
-            'timeEnd': forms.TextInput(attrs={'placeholder': "HH:MM"}),
-        }
+        fields = ['title', 'description', 'duration',]

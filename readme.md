@@ -8,5 +8,4 @@
 - [ ] Add in authentication model
 - [ ] Change 'startTime' and 'endTime' in agenda model to 'length'
 - [ ] Validate 'length' for all agenda points in meeting against total length of meeting
-- [ ] Remove 'notes' field from agenda, break out into separate model
-- [ ] Create 'actions' model, with ParentalKey to notes (which in turn is owned by Action)
+- [x] Create 'actions' model, with ParentalKey to notes (which in turn is owned by Action)
