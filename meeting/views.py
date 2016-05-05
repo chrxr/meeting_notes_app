@@ -3,8 +3,8 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import MeetingForm, AttendeeForm, AgendaForm
-from .models import Meeting, Attendee, AgendaPoint, Person
+from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm
+from .models import Meeting, Attendee, AgendaPoint, Person, MeetingNotes, Action
 from django.forms import formset_factory, inlineformset_factory
 import datetime
 
@@ -130,6 +130,23 @@ def manageMeeting(request, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
     return render(request, 'meeting/manage-meeting.html', {'meeting': meeting})
 
+# def meetingNotes(request, meeting_id):
+#     meeting = Meeting.objects.get(pk=meeting_id)
+#     attendees = Attendee.objects.filter(meeting=meeting_id)
+#     agenda_points = AgendaPoint.objects.filter(meeting=meeting_id)
+#     nForm = MeetingNotesForm(instance=MeetingNotes(), prefix='1', meeting_id=meeting_id)
+#     aForm = ActionForm(instance=Action(), prefix='1', meeting_id=meeting_id)
+#     return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nform': nForm, 'aform': aForm})
+
+def meetingNotes(request, meeting_id):
+    meeting = Meeting.objects.get(pk=meeting_id)
+    attendees = Attendee.objects.filter(meeting=meeting_id)
+    agenda_points = AgendaPoint.objects.filter(meeting=meeting_id)
+    NotesFormSet = formset_factory(MeetingNotesForm)
+    ActionFormSet = formset_factory(ActionForm)
+    nForm = NotesFormSet(prefix='notes', form_kwargs={'meeting_id': meeting_id})
+    aForm = ActionFormSet(prefix='actions', form_kwargs={'meeting_id': meeting_id})
+    return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nform': nForm, 'aform': aForm})
 
 #### HELPERS
 

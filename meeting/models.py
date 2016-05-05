@@ -26,10 +26,17 @@ class AgendaPoint(models.Model):
     title = models.CharField('Agenda point', max_length=255)
     description = models.TextField('Description', null=True, blank=True)
     duration = models.IntegerField('Duration', null=True, blank=True)
-    notes = models.TextField('Notes', null=True, blank=True)
 
     def __str__(self):
         return self.title
+
+class MeetingNotes(models.Model):
+    meeting = ParentalKey('Meeting', related_name='notes')
+    agendaPoint = models.ForeignKey('AgendaPoint', related_name='notes', null=True, blank=True)
+    notes = models.TextField('Notes', null=True, blank=True)
+
+    def __str__(self):
+        return self.meeting
 
 class Action(models.Model):
     meeting = ParentalKey('Meeting', related_name='actions')

@@ -1,0 +1,29 @@
+{% extends "meeting/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<h2>{{ meeting.title }}</h2>
+<h4>Attendees: {% for a in attendees %}{{ a.person }}, {% endfor %}</h4>
+
+<form>
+  <div id='notes_forms'>
+    <ul>
+      {{ nform.as_ul }}
+    </ul>
+  </div>
+  <div id='action_forms'>
+    <ul>
+    {{ aform.as_ul }}
+    </ul>
+  </div>
+</form>
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'meeting/js/add_agenda.js' %}"></script>
+
+{% endblock %}
