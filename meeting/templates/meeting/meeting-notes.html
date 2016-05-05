@@ -7,17 +7,19 @@
 <h2>{{ meeting.title }}</h2>
 <h4>Attendees: {% for a in attendees %}{{ a.person }}, {% endfor %}</h4>
 
-<form>
-  <div id='notes_forms'>
+<form id="meeting-notes-form" action="" method="post">
+  {% csrf_token %}
+  <div id='notes-forms'>
     <ul>
-      {{ nform.as_ul }}
+      {{ nforms.as_ul }}
     </ul>
   </div>
-  <div id='action_forms'>
+  <div id='action-forms'>
     <ul>
-    {{ aform.as_ul }}
+    {{ aforms.as_ul }}
     </ul>
   </div>
+    <input type="submit" value="Submit" />
 </form>
 
 

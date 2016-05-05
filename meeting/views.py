@@ -130,23 +130,32 @@ def manageMeeting(request, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
     return render(request, 'meeting/manage-meeting.html', {'meeting': meeting})
 
-# def meetingNotes(request, meeting_id):
-#     meeting = Meeting.objects.get(pk=meeting_id)
-#     attendees = Attendee.objects.filter(meeting=meeting_id)
-#     agenda_points = AgendaPoint.objects.filter(meeting=meeting_id)
-#     nForm = MeetingNotesForm(instance=MeetingNotes(), prefix='1', meeting_id=meeting_id)
-#     aForm = ActionForm(instance=Action(), prefix='1', meeting_id=meeting_id)
-#     return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nform': nForm, 'aform': aForm})
-
 def meetingNotes(request, meeting_id):
     meeting = Meeting.objects.get(pk=meeting_id)
     attendees = Attendee.objects.filter(meeting=meeting_id)
     agenda_points = AgendaPoint.objects.filter(meeting=meeting_id)
     NotesFormSet = formset_factory(MeetingNotesForm)
     ActionFormSet = formset_factory(ActionForm)
-    nForm = NotesFormSet(prefix='notes', form_kwargs={'meeting_id': meeting_id})
-    aForm = ActionFormSet(prefix='actions', form_kwargs={'meeting_id': meeting_id})
-    return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nform': nForm, 'aform': aForm})
+    nforms = NotesFormSet(request.POST or None, prefix='notes', form_kwargs={'meeting_id': meeting_id})
+    aforms = ActionFormSet(request.POST or None, prefix='actions', form_kwargs={'meeting_id': meeting_id})
+    if request.method == 'POST':
+        if all([af.is_valid() for af in aforms]):
+            for af in aforms:
+                new_action = af.save(commit=False)
+                new_action.meeting = meeting
+                new_action.save()
+        else:
+            return HttpResponse(aforms.errors)
+        if all([nf.is_valid() for nf in nforms]):
+            for nf in nforms:
+                new_note = nf.save(commit=False)
+                new_note.meeting = meeting
+                new_note.save()
+        else:
+            return HttpResponse(aforms.errors)
+        return HttpResponseRedirect(reverse('manage-meeting', args=[meeting_id]))
+    else:
+        return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nforms': nforms, 'aforms': aforms})
 
 #### HELPERS
 

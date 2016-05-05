@@ -28,8 +28,9 @@ class ActionForm(forms.ModelForm):
         self.meeting_id = kwargs.pop('meeting_id')
         super(ActionForm,self).__init__(*args,**kwargs)
         agendaPoints = AgendaPoint.objects.filter(meeting = self.meeting_id).values_list('id','title')
-        print agendaPoints
+        # assignee = Attendee.objects.filter(meeting = self.meeting_id).values_list('id','person__firstName')
         self.fields['agendaPoint'].choices = agendaPoints
+        # self.fields['assignee'].choices = assignee
 
     class Meta:
         model = Action
