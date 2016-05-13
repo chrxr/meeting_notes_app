@@ -24,7 +24,7 @@
   {% for agenda_point in agenda_points %}
   <ul>
     <li>{{ agenda_point.title }}</li>
-    <li>{{ agenda_point.timeStart|time:'H:i' }} - {{ agenda_point.timeEnd|time:'H:i' }}</li>
+    <li>{{ agenda_point.duration }} mins</li>
   </ul>
   {% endfor %}
 

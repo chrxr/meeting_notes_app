@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Test form</title>
+  <style>
+    body {
+      font-family: arial;
+    }
+    .meetingForm {
+      width:500px;
+    }
+    .formList {
+      list-style: none;
+    }
+    .formItem {
+      margin-top:1em;
+    }
+    .formItem label {
+      display:block;
+    }
+    .formItem input, textarea, select {
+        width:100%;
+        height:30px;
+    }
+    .formItem.sumbitButton {
+      width:
+    }
+    .formItem.inline-form {
+      display: inline-block;
+      margin-right:1.5%;
+    }
+    .width-3 {
+      width:31%;
+    }
+    .width-3-2 {
+      width:62%;
+    }
+  </style>
+</head>
+<body>
+  <form name="meetingForm" class="meetingForm" action="/">
+    <ul class="formList">
+      <li class="formItem"><label for="title">Title</label><input name="title" type="text"></li>
+      <li class="formItem inline-form width-3"><label for="data">Date</label><input name="date" type="date"></li>
+      <li class="formItem inline-form width-3"><label for="startTime">Start time</label><input name="startTime" type="time"></li>
+      <li class="formItem inline-form width-3"><label for="endTime">End time</label><input name="endTime" type="time"></li>
+      <div id='agendaContainer'>
+        <ul id="agenda-list-1">
+          <li class="formItem inline-form width-3-2"><label for="agenda-title-1">Agenda point</label>
+            <input name="agenda-title-1" id="agenda-title-1" type="text" />
+          </li>
+          <li class="formItem inline-form width-3"><label for="agenda-duration-1">Duration</label>
+            <input name="agenda-duration-1" id="agenda-duration-1" type="text" />
+          </li>
+        </ul>
+      </div>
+      <li class="formItem"><button id="addPoints" type="button">Add more agenda points</button></li>
+      <li class="formItem"><label for="preMeetingNotes">Pre-meeting notes</label><textarea name="preMeetingNotes" type="text"></textarea></li>
+      <li class="formItem width-3"><input type="submit" value="Submit"></li>
+    </ul>
+  </form>
+  <script>
+    var addButton = document.getElementById('addPoints');
+    addButton.addEventListener('click', function(){addPoints()}, false);
+    function addPoints() {
+      var agendaSelect = document.getElementById('agenda-list-1'),
+          agendaContainer = document.getElementById('agendaContainer'),
+          newAgendaSelect = agendaSelect.cloneNode(true);
+      agendaContainer.appendChild(newAgendaSelect);
+    }
+
+  </script>
+
+</body>
+</html>

@@ -11,6 +11,7 @@
     <li>{{ meeting.location }}</li>
     <li><a href="{% url 'manage-meeting' meeting.pk %}">Manage meeting</a></li>
     <li><a href="{% url 'meeting-details' meeting.pk %}">View full details</a></li>
+    <li><a href="{% url 'meeting-notes' meeting.pk %}">Make notes</a></li>
   </ul>
 {% endfor %}
 
