@@ -25,7 +25,7 @@ class AgendaPoint(models.Model):
     meeting = ParentalKey('Meeting', related_name='agenda_points')
     title = models.CharField('Agenda point', max_length=255)
     description = models.TextField('Description', null=True, blank=True)
-    duration = models.IntegerField('Duration', null=True, blank=True)
+    duration = models.IntegerField('Duration', null=True, blank=True, default=0)
 
     def __str__(self):
         return self.title

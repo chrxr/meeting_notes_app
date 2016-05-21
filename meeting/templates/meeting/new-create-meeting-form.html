@@ -1,0 +1,62 @@
+{% extends "meeting/base.html" %}
+{% load static %}
+
+{% block content %}
+
+{% if meeting_id %}
+<form action="/meetings/{{ meeting_id }}/edit/" method="post">
+{% else %}
+<form action="/meetings/new-create-meeting/" method="post">
+{% endif %}
+    {% csrf_token %}
+      <ul>
+        {{ mform.non_field_errors }}
+        {{ aforms.non_field_errors }}
+        <li class="form-item">
+          {{ mform.title.errors }}
+          {{ mform.title.label_tag }}
+          {{ mform.title }}
+        </li>
+        <li class="form-item inline-form width-3">
+          {{ mform.date.errors }}
+          {{ mform.date.label_tag }}
+          {{ mform.date }}
+        </li>
+        <li class="form-item inline-form width-3">
+          {{ mform.timeStart.errors }}
+          {{ mform.timeStart.label_tag }}
+          {{ mform.timeStart }}
+        </li>
+        <li class="form-item inline-form width-3">
+          {{ mform.timeEnd.errors }}
+          {{ mform.timeEnd.label_tag }}
+          {{ mform.timeEnd }}
+        </li>
+        <div id='agenda_container'>
+          <ul id="id_agenda_points-0-list">
+            {% for form in aforms %}
+              {% for field in form %}
+                <li class="form-item inline-form width-3">
+                  {{ field.errors }}
+                  {{ field.label_tag }}
+                  {{ field }}
+                </li>
+              {% endfor %}
+              {% if form.can_delete %}
+                <li class='hidden-field'>{{ form.DELETE }}</li>
+              {% endif %}
+            {% endfor %}
+            <button id="id_agenda_points-0-delete" type="button">X</button>
+          </ul>
+        </div>
+        <li class="form-item"><button id="add_points" type="button">Add more agenda points</button></li>
+        {{ aforms.management_form }}
+      </ul>
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'meeting/js/new_add_agenda.js' %}"></script>
+{% endblock %}

@@ -53,21 +53,70 @@
           <li class="formItem inline-form width-3"><label for="agenda-duration-1">Duration</label>
             <input name="agenda-duration-1" id="agenda-duration-1" type="text" />
           </li>
+          <button id="remove-point-1" type="button">X</button>
         </ul>
       </div>
+      <div id='numContainers'>1</div> <!--How does this need to change when forms are removed?-->
       <li class="formItem"><button id="addPoints" type="button">Add more agenda points</button></li>
       <li class="formItem"><label for="preMeetingNotes">Pre-meeting notes</label><textarea name="preMeetingNotes" type="text"></textarea></li>
       <li class="formItem width-3"><input type="submit" value="Submit"></li>
     </ul>
   </form>
   <script>
-    var addButton = document.getElementById('addPoints');
-    addButton.addEventListener('click', function(){addPoints()}, false);
-    function addPoints() {
-      var agendaSelect = document.getElementById('agenda-list-1'),
-          agendaContainer = document.getElementById('agendaContainer'),
+    var addButton = document.getElementById('addPoints'),
+        firstDeleteButton = document.getElementById('remove-point-1'),
+        agendaSelect = document.getElementById('agenda-list-1');
+    firstDeleteButton.addEventListener('click', function(){deleteAgenda(agendaSelect)}, false);
+    addButton.addEventListener('click', function(){addPoints(agendaSelect)}, false);
+
+    function addPoints(agendaSelect) {
+      numContainersContainer = document.getElementById('numContainers')
+      nextNumContainers = parseInt(numContainersContainer.innerHTML) + 1
+      var agendaContainer = document.getElementById('agendaContainer'),
           newAgendaSelect = agendaSelect.cloneNode(true);
+      existingAgendaID = newAgendaSelect.id;
+      existingAgendaID = existingAgendaID.split('-');
+      existingAgendaID[2] = nextNumContainers;
+      newAgendaID = existingAgendaID.join('-');
+      newAgendaSelect.id = newAgendaID
+      numContainersContainer.innerHTML = nextNumContainers;
+      newAgendaSelectChildren = newAgendaSelect.childNodes;
+
+      for (var i = 0; i < newAgendaSelectChildren.length; i++) {
+        new_li = newAgendaSelectChildren[i]
+
+        if (new_li.id) {
+          var existing_id = new_li.id;
+          existing_id = existing_id.split('-');
+          existing_id[2] = nextNumContainers;
+          var new_id = existing_id.join('-')
+          new_li.id = new_id;
+          new_li.addEventListener('click', function(){deleteAgenda(newAgendaSelect)},false )
+        }
+
+        for (var ii = 0; ii < new_li.childNodes.length; ii++) {
+          if (new_li.childNodes[ii].id) {
+            var existing_id = new_li.childNodes[ii].id,
+                existing_name = new_li.childNodes[ii].name;
+            existing_id = existing_id.split('-'),
+            existing_name = existing_name.split('-'),
+            existing_id[2] = nextNumContainers,
+            existing_name[2] = nextNumContainers;
+            var new_id = existing_id.join('-'),
+                new_name = existing_name.join('-');
+            new_li.childNodes[ii].id = new_id;
+            new_li.childNodes[ii].name = new_name;
+            new_li.childNodes[ii].value = "";
+            console.log(existing_name, existing_id);
+          }
+        }
+
+      }
       agendaContainer.appendChild(newAgendaSelect);
+    }
+
+    function deleteAgenda(agendaItem) {
+      agendaItem.parentNode.removeChild(agendaItem)
     }
 
   </script>

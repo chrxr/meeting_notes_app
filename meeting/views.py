@@ -3,9 +3,9 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm
+from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm, NewMeetingForm, AddAgendaForm
 from .models import Meeting, Attendee, AgendaPoint, Person, MeetingNotes, Action
-from django.forms import formset_factory, inlineformset_factory
+from django.forms import formset_factory, inlineformset_factory, BaseFormSet
 import datetime
 
 
@@ -36,6 +36,27 @@ def createMeeting(request, meeting_id=None):
     else:
         mform = MeetingForm(instance=Meeting())
     return render(request, 'meeting/create-meeting-form.html', {'form': mform, 'meeting_id': meeting_id})
+
+def newCreateMeeting(request, meeting_id=None):
+    mform = MeetingForm(request.POST or None)
+    agendaFormSet = formset_factory(AddAgendaForm, min_num=0, formset=RequiredFormSet)
+    aforms = agendaFormSet(request.POST or None, prefix='agenda_points',)
+
+    if request.method == 'POST':
+        if mform.is_valid():
+            new_meeting = mform.save()
+        else:
+            return HttpResponse(mform.errors)
+        if all([af.is_valid() for af in aforms]):
+            for af in aforms:
+                new_agenda_point = af.save(commit=False)
+                new_agenda_point.meeting = new_meeting
+                new_agenda_point.save()
+        else:
+            return HttpResponse(aforms.errors)
+        return HttpResponseRedirect(reverse('manage-meeting', args=[new_meeting.pk]))
+    else:
+        return render(request, 'meeting/new-create-meeting-form.html', {'mform': mform,'aforms': aforms, 'meeting_id': meeting_id})
 
 
 ##### Stuff to do for attendees
@@ -84,7 +105,10 @@ def editAgendaPoints(request, meeting_id):
     AgendaFormSet = inlineformset_factory(Meeting, AgendaPoint, exclude=('meeting','notes'), extra=0)
     current_agenda_items = AgendaPoint.objects.filter(meeting=meeting_id)
     total_agenda_length = sum([d.duration for d in current_agenda_items])
-    meeting_length = calculate_meeting_length(meeting)
+    if meeting.timeStart:
+        meeting_length = calculate_meeting_length(meeting)
+    else:
+        meeting_length = None
     if request.method == 'POST':
         aforms = AgendaFormSet(request.POST, prefix='agenda_points', instance=meeting)
         if aforms.is_valid():
@@ -157,6 +181,8 @@ def meetingNotes(request, meeting_id):
     else:
         return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nforms': nforms, 'aforms': aforms})
 
+
+
 #### HELPERS
 
 def calculate_meeting_length(meeting):
@@ -165,3 +191,10 @@ def calculate_meeting_length(meeting):
     meeting_length_td = end - start
     meeting_length_mins = meeting_length_td.total_seconds() / 60
     return meeting_length_mins
+
+
+class RequiredFormSet(BaseFormSet):
+    def __init__(self, *args, **kwargs):
+        super(RequiredFormSet, self).__init__(*args, **kwargs)
+        for form in self.forms:
+            form.empty_permitted = False
