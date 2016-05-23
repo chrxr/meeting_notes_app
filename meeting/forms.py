@@ -4,12 +4,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
-class NewMeetingForm(forms.Form):
-    meeting_title = forms.CharField(label='Meeting title')
-    date = forms.DateField(label="Date")
-    start_time = forms.TimeField(label='Start time')
-    end_time = forms.TimeField(label='End time')
-    agenda_item = forms.ModelChoiceField(queryset=AgendaPoint.objects.all())
+class NewAttendeeForm(forms.Form):
+    pass
 
 
 class MeetingForm(forms.ModelForm):

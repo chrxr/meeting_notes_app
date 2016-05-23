@@ -7,7 +7,6 @@
 })();
 
 /* STUFF TO DO:
-  - When items are agenda items are deleted, need to rename all of the other agenda items with new order
  */
 
 
@@ -68,7 +67,9 @@ function deleteAgenda(agenda_list) {
       agenda_container = document.getElementById("agenda_container");
 
   total_current_forms.value = next_form_number;
+/* Needs to remove agenda point before renaming remaining ones */
   agenda_list.parentNode.removeChild(agenda_list);
+
   var remaining_uls = agenda_container.childNodes,
       form_number_reset = 0;
 
@@ -107,25 +108,6 @@ function deleteAgenda(agenda_list) {
           }
         }
       }
-
-      // if (deeper_lis.childNodes){
-      //   for (var ii = 0; ii < deeper_lis.childNodes.length; ii++) {
-      //     if (deeper_lis.childNodes[ii].id) {
-      //       var existing_id = deeper_lis.childNodes[ii].id.split('-'),
-      //           existing_name = deeper_lis.childNodes[ii].name.split('-');
-      //
-      //       existing_id[1] = form_number_reset;
-      //       existing_name[1] = form_number_reset;
-      //
-      //       var new_id = existing_id.join('-'),
-      //           new_name = existing_name.join('-');
-      //
-      //       deeper_lis.childNodes[ii].id = new_id;
-      //       deeper_lis.childNodes[ii].name = new_name;
-      //     }
-      //   }
-      // }
-
       ++form_number_reset
     }
   }

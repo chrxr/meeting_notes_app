@@ -17,6 +17,15 @@
           {{ mform.title.label_tag }}
           {{ mform.title }}
         </li>
+        <li class="form-item">
+          <label for="attendees">Attendees:</label>
+          <input id="attendees" name="attendees" />
+          <div class="name-selector">
+            <ul id="name-selector-list">
+              
+            </ul>
+          </div>
+        </li>
         <li class="form-item inline-form width-3">
           {{ mform.date.errors }}
           {{ mform.date.label_tag }}
@@ -59,4 +68,5 @@
 
 {% block extra_js %}
 <script src="{% static 'meeting/js/new_add_agenda.js' %}"></script>
+<script src="{% static 'meeting/js/new_add_attendees.js' %}"></script>
 {% endblock %}

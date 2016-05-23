@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm, NewMeetingForm, AddAgendaForm
+from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm, AddAgendaForm
 from .models import Meeting, Attendee, AgendaPoint, Person, MeetingNotes, Action
 from django.forms import formset_factory, inlineformset_factory, BaseFormSet
 import datetime
