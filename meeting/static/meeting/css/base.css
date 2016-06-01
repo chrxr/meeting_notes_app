@@ -68,8 +68,21 @@ body {
 }
 
 .name-selector{
-  width:50%;
+  width:150px;
   height:auto;
   background-color:white;
   margin:2px;
+  position:absolute;
+}
+
+.attendees-added {
+  margin-top:5px;
+}
+
+.attendees-added button {
+  margin-left:10px;
+}
+
+li.selected {
+  background-color:pink;
 }

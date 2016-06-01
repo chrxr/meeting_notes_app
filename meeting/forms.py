@@ -4,8 +4,13 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 
-class NewAttendeeForm(forms.Form):
-    pass
+class NewAttendeeForm(forms.ModelForm):
+    class Meta:
+        model = Attendee
+        exclude = ['meeting']
+        widgets = {
+            'person': forms.TextInput(),
+        }
 
 
 class MeetingForm(forms.ModelForm):

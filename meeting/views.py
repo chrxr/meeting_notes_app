@@ -1,9 +1,10 @@
 from django import forms
+from django.core import serializers
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect
-from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm, AddAgendaForm
+from .forms import MeetingForm, AttendeeForm, AgendaForm, MeetingNotesForm, ActionForm, AddAgendaForm, AttendeeForm, NewAttendeeForm
 from .models import Meeting, Attendee, AgendaPoint, Person, MeetingNotes, Action
 from django.forms import formset_factory, inlineformset_factory, BaseFormSet
 import datetime
@@ -37,10 +38,14 @@ def createMeeting(request, meeting_id=None):
         mform = MeetingForm(instance=Meeting())
     return render(request, 'meeting/create-meeting-form.html', {'form': mform, 'meeting_id': meeting_id})
 
+
+
 def newCreateMeeting(request, meeting_id=None):
     mform = MeetingForm(request.POST or None)
     agendaFormSet = formset_factory(AddAgendaForm, min_num=0, formset=RequiredFormSet)
     aforms = agendaFormSet(request.POST or None, prefix='agenda_points',)
+    attendeeFormSet = formset_factory(NewAttendeeForm)
+    atforms = attendeeFormSet(request.POST or None, prefix='attendees')
 
     if request.method == 'POST':
         if mform.is_valid():
@@ -54,9 +59,19 @@ def newCreateMeeting(request, meeting_id=None):
                 new_agenda_point.save()
         else:
             return HttpResponse(aforms.errors)
+        if all([atf.is_valid() for atf in atforms]):
+            for atf in atforms:
+                new_attendee = atf.save(commit=False)
+                new_attendee.meeting = new_meeting
+                new_attendee.save()
+        else:
+            return HttpResponse(atforms.errors)
         return HttpResponseRedirect(reverse('manage-meeting', args=[new_meeting.pk]))
     else:
-        return render(request, 'meeting/new-create-meeting-form.html', {'mform': mform,'aforms': aforms, 'meeting_id': meeting_id})
+        return render(request, 'meeting/new-create-meeting-form.html', {'mform': mform,'aforms': aforms, 'atforms': atforms, 'meeting_id': meeting_id})
+
+
+
 
 
 ##### Stuff to do for attendees
@@ -181,6 +196,10 @@ def meetingNotes(request, meeting_id):
     else:
         return render(request, 'meeting/meeting-notes.html', {'meeting': meeting, 'agenda_points': agenda_points, 'attendees': attendees, 'nforms': nforms, 'aforms': aforms})
 
+def returnNames(request):
+    people = Person.objects.all()
+    data = serializers.serialize('json', people)
+    return HttpResponse(data)
 
 
 #### HELPERS

@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^meetings/([0-9]+)/meeting-details/$', views.meetingDetails, name='meeting-details'),
     url(r'^meetings/([0-9]+)/edit/$', views.createMeeting, name='edit-meeting'),
     url(r'^meetings/([0-9]+)/notes/$', views.meetingNotes, name='meeting-notes'),
+    url(r'^meetings/return-names/$', views.returnNames, name='return-names'),
 ]
