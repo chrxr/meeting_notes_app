@@ -2,11 +2,10 @@
 - If no attendee can be found then it should ask if you want to add an email
   for the person
 TO DO:
-- Add in event listener for unfocus on field
+- Add in event listener for unfocus on field (difficult, as focus is lost on clicking name)
 - Make all names in json lower case
 - OR change the code to use a regex that ignores case (BETTER)
 - Pressing enter will add name to list (if selected, or if not just add the words in the box)
-
 */
 
 (function() {
@@ -19,6 +18,8 @@ TO DO:
 
   // submit_button.addEventListener("click", function(e){submitForm(e)}, false);
 
+  /* Gets the contacts from db using a promise. Once promise is fulfilled, adds various
+     event listeners on keyup/down */
   get('/meetings/return-names/').then(function(response) {
     return JSON.parse(response);
   }, function(error) {
@@ -31,13 +32,29 @@ TO DO:
       var person_json = {"full_name": full_name, "id": person_id}
       names_json.push(person_json)
     }
-
-    attendees_form.addEventListener("keyup", function(e){keyPress(this, e, names_json, name_selector, names_added)});
+    attendees_form.addEventListener('keydown', function(e){
+      if(e.keyCode == 13) {
+        e.preventDefault();
+        return false;
+      }
+    });
+    // THIS DOESN'T WORK AS CLICKING ON THE NAMES LIST MOVE FOCUS
+    // attendees_form.addEventListener('focusout', function(e){
+    //   var name_selector_list = document.getElementById('name-selector-list');
+    //   if (name_selector_list) {
+    //     name_selector_list.parentNode.removeChild(name_selector_list);
+    //   }
+    // });
+    attendees_form.addEventListener("keyup", function(e){
+      keyPress(this, e, names_json, name_selector, names_added)
+    });
   });
 
 })();
 
 function keyPress(form_field, evt, names, name_selector, names_added) {
+
+  // If down arrow is pressed
   if (evt.keyCode == 40) {
     if (name_selector.childNodes.length > 0) {
       selectName(name_selector, "down");
@@ -46,6 +63,7 @@ function keyPress(form_field, evt, names, name_selector, names_added) {
       console.log("NO NAMES")
     }
   }
+  // If up arrow is pressed
   else if (evt.keyCode == 38) {
     if (name_selector.childNodes.length > 0) {
       selectName(name_selector, "up");
@@ -54,8 +72,19 @@ function keyPress(form_field, evt, names, name_selector, names_added) {
       console.log("NO NAMES")
     }
   }
-
-  /* Dedupe the names that are returned in the list */
+  // If up enter key is pressed
+  else if (evt.keyCode == 13) {
+    var name_selector_list = document.getElementById('name-selector-list');
+    if (name_selector_list) {
+      var available_names = name_selector_list.childNodes;
+      current_selected = getCurrentSelected(available_names);
+      console.log(current_selected)
+      if (current_selected >= 0) {
+        changeName(available_names[current_selected], form_field, names_added, name_selector);
+      }
+    }
+  }
+  // if any other key is pressed. TO DO: look at why shift or other keys multiplies results
   else if (form_field.value) {
     var new_ul = document.createElement("ul");
     new_ul.id = "name-selector-list";
@@ -65,7 +94,10 @@ function keyPress(form_field, evt, names, name_selector, names_added) {
         var new_name_li = document.createElement("li");
         new_name_li.id = "person-" + person.id;
         new_name_li.innerHTML = person.full_name;
-        new_name_li.addEventListener('click', function(){changeName(this, form_field, names_added, name_selector)}, false);
+        new_name_li.addEventListener('click', function(){
+          changeName(this, form_field, names_added, name_selector)},
+          false
+        );
         new_ul.appendChild(new_name_li);
       }
       else {
@@ -87,6 +119,7 @@ function keyPress(form_field, evt, names, name_selector, names_added) {
 
 
 function changeName(new_li, form_field, names_added, name_selector) {
+  console.log(new_li);
   var person_id = new_li.id.split('-')[1];
 
   form_field.value = "";
@@ -96,7 +129,11 @@ function changeName(new_li, form_field, names_added, name_selector) {
   }
   if (!document.getElementById(new_li.id)) {
     var name_to_add = new_li.cloneNode(true);
-    name_to_add.removeEventListener('click', function(){changeName(this, form_field, names_added)}, false);
+    name_to_add.removeAttribute('class');
+    name_to_add.removeEventListener('click', function(){
+      changeName(this, form_field, names_added)},
+      false
+    );
     names_added.appendChild(name_to_add);
     var delete_button = document.createElement("button"),
         name_to_append_to = document.getElementById(new_li.id);
@@ -104,7 +141,13 @@ function changeName(new_li, form_field, names_added, name_selector) {
     delete_button.innerHTML = ' X';
     name_to_append_to.appendChild(delete_button);
     var hidden_input = addNameToHiddenForm(names_added, form_field, person_id, name_selector);
-    delete_button.addEventListener('click', function(){deleteName(name_to_append_to, hidden_input, name_selector)}, false);
+    delete_button.addEventListener('click', function(){
+      deleteName(name_to_append_to, hidden_input, name_selector)},
+      false
+    );
+  }
+  else {
+    console.log("FAIL");
   }
 }
 
@@ -119,12 +162,7 @@ function changeName(new_li, form_field, names_added, name_selector) {
 
 function selectName(name_selector, direction) {
   var available_names = document.getElementById('name-selector-list').childNodes;
-  for (var i = 0; i < available_names.length; i++) {
-      if (available_names[i].className == "selected") {
-        var current_selected = i;
-        console.log(current_selected);
-      }
-  }
+  current_selected = getCurrentSelected(available_names)
   if (current_selected >= available_names.length-1 && direction == "up") {
     available_names[current_selected].removeAttribute("class");
     var next_selection = current_selected-1;
@@ -146,7 +184,6 @@ function selectName(name_selector, direction) {
     else {
       var next_selection = current_selected+1;
     }
-    console.log(next_selection);
     available_names[next_selection].setAttribute("class", "selected");
   }
   else {
@@ -184,6 +221,15 @@ function renameHiddenInputs(name_selector) {
         remaining_inputs[i].id = "id_attendees-"+num_attendees+"-person";
     }
   }
+}
+
+function getCurrentSelected(available_names) {
+  for (var i = 0; i < available_names.length; i++) {
+      if (available_names[i].className == "selected") {
+        var current_selected = i;
+      }
+  }
+  return current_selected;
 }
 
 function get(url) {
